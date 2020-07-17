@@ -1,3 +1,5 @@
+import re
+
 from bs4 import BeautifulSoup
 from csv_writer import CsvWriter
 from get_html import GetHTML
@@ -42,6 +44,8 @@ def parse_books_info(books):
         name = soup.find('title', id="title-head")
         name = str(name.text)
 
+        author = soup.find(href=re.compile("author/")).text
+
         page = soup.find('div', id="row-details", class_='book-content-data')
         if page is None:
             page = 'No Pages Info'
@@ -50,17 +54,26 @@ def parse_books_info(books):
             page = str(page.replace('  ', '').replace('\n', ' '))
             print(page)
 
+        genre = ""
+        genres = soup.find_all(href=re.compile("genre"))
+        if not genres:
+            genre = 'No Genre'
+        else:
+            for i in range(len(genres)):
+                genre_tmp = str(genres[i])
+                genre_tmp = genre_tmp[genre_tmp.find('>') + 1:genre_tmp.find('</')]
+                if i == len(genres) - 1:
+                    genre = genre + genre_tmp
+                else:
+                    genre = genre + genre_tmp + ", "
+
         isbn = soup.find('span', itemprop="isbn")
         if isbn is None:
             isbn = 'No ISBN'
         else:
             isbn = str(isbn.text)
 
-        # TODO ДОБАВИТЬ ЖАНР
-        # genre = soup.findAll('a', class_="label-genre")
-        # print(genre)
-
-        data = [[name, page, isbn]]
+        data = [[name, author, page, genre, isbn]]
         filename = 'books.csv'
         CsvWriter.csv_write(filename, data)
 

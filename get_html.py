@@ -13,6 +13,6 @@ class GetHTML:
         rq.encoding = 'utf-8'
 
         print('Getting HTML-code from ', url)
-        time.sleep(random.randint(30, 35))
+        time.sleep(random.randint(40, 45))
 
         return rq.text
