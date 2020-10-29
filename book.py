@@ -13,7 +13,7 @@ def get_books_pages(ll_login):
     list_of_books_is_empty = True
 
     books = []
-    webpage = 1
+    webpage = 6
 
     while list_of_books_is_empty:
         url = url_base + url_text + str(webpage)
@@ -44,7 +44,11 @@ def parse_books_info(books):
         name = soup.find('title', id="title-head")
         name = str(name.text)
 
-        author = soup.find(href=re.compile("author/")).text
+        author = soup.find(href=re.compile("author/"))
+        if author is None:
+            author = 'No Author Info'
+        else:
+            author = soup.find(href=re.compile("author/")).text
 
         page = soup.find('div', id="row-details", class_='book-content-data')
         if page is None:
@@ -79,6 +83,6 @@ def parse_books_info(books):
 
 
 if __name__ == '__main__':
-    ll_login = 'jukka413'  # login пользователя livelib
+    ll_login = 'EvaRob'  # login пользователя livelib
     links = get_books_pages(ll_login)
     print('Load completed')

@@ -14,4 +14,3 @@ class CsvWriter:
         with my_file:
             writer = csv.writer(my_file, delimiter=';')
             writer.writerows(e)
-
