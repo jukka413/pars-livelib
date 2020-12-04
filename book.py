@@ -50,13 +50,28 @@ def parse_books_info(books):
         else:
             author = soup.find(href=re.compile("author/")).text
 
-        page = soup.find('div', id="row-details", class_='book-content-data')
-        if page is None:
-            page = 'No Pages Info'
+        page = ""
+        pages = soup.find_all('div', class_='bc-info__wrapper')  # id="5",
+        if pages is None:
+            pages = 'No Pages Info'
         else:
-            page = page.find('p').text
-            page = str(page.replace('  ', '').replace('\n', ' '))
-            print(page)
+            page_tmp = pages[1]
+            print(page_tmp)
+            page_tmp = page_tmp.find_all('p')
+            print(page_tmp)
+            for i in range(len(page_tmp)):
+                # print(page_tmp[i])
+                page_tmp_l = str(page_tmp[i])
+                page_tmp_l = page_tmp_l.replace('  ', '').replace('\n', ' ').replace('<br/>', ' ')
+                page_tmp_l = page_tmp_l[page_tmp_l.find('>') + 1:page_tmp_l.find('</')]
+                if (page_tmp_l[0:4] == 'ISBN') or (page_tmp_l[0:4] == ' Тег'):
+                    continue
+                if i == len(page_tmp) - 1:
+                    page = page + page_tmp_l
+                else:
+                    page = page + page_tmp_l + ", "
+            if page == "":
+                page = "No Pages Info"
 
         genre = ""
         genres = soup.find_all(href=re.compile("genre"))
