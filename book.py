@@ -13,7 +13,7 @@ def get_books_pages(ll_login):
     list_of_books_is_empty = True
 
     books = []
-    webpage = 2
+    webpage = 1
 
     while list_of_books_is_empty:
         url = url_base + url_text + str(webpage)
@@ -50,10 +50,11 @@ def parse_books_info(books):
         else:
             author = soup.find(href=re.compile("author/")).text
 
-        page = ""
         pages = soup.find_all('div', class_='bc-info__wrapper')  # id="5",
+        page = ""
+        publication_date = 'No date info'
         if pages is None:
-            pages = 'No Pages Info'
+            page = 'No Pages Info'
         else:
             page_tmp = pages[1]
             page_tmp = page_tmp.find_all('p')
@@ -61,7 +62,10 @@ def parse_books_info(books):
                 page_tmp_l = str(page_tmp[i])
                 page_tmp_l = page_tmp_l.replace('  ', '').replace('\n', ' ').replace('<br/>', ' ')
                 page_tmp_l = page_tmp_l[page_tmp_l.find('>') + 1:page_tmp_l.find('</')]
-                if (page_tmp_l[0:4] == 'ISBN') or (page_tmp_l[0:4] == ' Тег'):
+                if page_tmp_l[0:4] in ('ISBN', 'Язык', ' Тег', 'Том:', 'Форм', ' Жан'):
+                    continue
+                if page_tmp_l[0:3] == 'Год':
+                    publication_date = page_tmp_l
                     continue
                 if i == len(page_tmp) - 1:
                     page = page + page_tmp_l
@@ -98,7 +102,7 @@ def parse_books_info(books):
         else:
             isbn = str(isbn.text)
 
-        data = [[name, author, page, genre, isbn]]
+        data = [[name, author, page, genre, publication_date, isbn]]
         filename = 'books.csv'
         CsvWriter.csv_write(filename, data)
 
