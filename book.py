@@ -13,7 +13,7 @@ def get_books_pages(ll_login):
     list_of_books_is_empty = True
 
     books = []
-    webpage = 6
+    webpage = 2
 
     while list_of_books_is_empty:
         url = url_base + url_text + str(webpage)
@@ -56,11 +56,8 @@ def parse_books_info(books):
             pages = 'No Pages Info'
         else:
             page_tmp = pages[1]
-            print(page_tmp)
             page_tmp = page_tmp.find_all('p')
-            print(page_tmp)
             for i in range(len(page_tmp)):
-                # print(page_tmp[i])
                 page_tmp_l = str(page_tmp[i])
                 page_tmp_l = page_tmp_l.replace('  ', '').replace('\n', ' ').replace('<br/>', ' ')
                 page_tmp_l = page_tmp_l[page_tmp_l.find('>') + 1:page_tmp_l.find('</')]
@@ -74,6 +71,7 @@ def parse_books_info(books):
                 page = "No Pages Info"
 
         genre = ""
+        genre_list = list()
         genres = soup.find_all(href=re.compile("genre"))
         if not genres:
             genre = 'No Genre'
@@ -81,10 +79,18 @@ def parse_books_info(books):
             for i in range(len(genres)):
                 genre_tmp = str(genres[i])
                 genre_tmp = genre_tmp[genre_tmp.find('>') + 1:genre_tmp.find('</')]
+                if genre_tmp == 'Жанры':
+                    continue
+                if genre_tmp in genre_list:
+                    continue
+                else:
+                    genre_list.append(genre_tmp)
                 if i == len(genres) - 1:
                     genre = genre + genre_tmp
                 else:
                     genre = genre + genre_tmp + ", "
+            if genre == "":
+                genre = 'No Genre'
 
         isbn = soup.find('span', itemprop="isbn")
         if isbn is None:
@@ -98,6 +104,6 @@ def parse_books_info(books):
 
 
 if __name__ == '__main__':
-    ll_login = 'EvaRob'  # login пользователя livelib
+    ll_login = 'jukka413'  # login пользователя livelib
     links = get_books_pages(ll_login)
     print('Load completed')
