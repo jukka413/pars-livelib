@@ -18,10 +18,12 @@ def get_books_pages(ll_login):
     while list_of_books_is_empty:
         url = url_base + url_text + str(webpage)
         html = GetHTML.get_html(url)
+        print(html)
         soup = BeautifulSoup(html, 'lxml')
 
-        checkList = soup.find('div', class_='with-pad')
-        if checkList is None:
+        checkList = soup.find('div', class_='book-data')
+        print(checkList)
+        if checkList and webpage < 3:
             books = GetBook.get_books(html, books)
             webpage += 1
             parse_books_info(books)
@@ -56,7 +58,10 @@ def parse_books_info(books):
         if pages is None:
             page = 'No Pages Info'
         else:
-            page_tmp = pages[1]
+            try:
+                page_tmp = pages[1]
+            except IndexError:
+                continue
             page_tmp = page_tmp.find_all('p')
             for i in range(len(page_tmp)):
                 page_tmp_l = str(page_tmp[i])
@@ -103,7 +108,7 @@ def parse_books_info(books):
             isbn = str(isbn.text)
 
         data = [[name, author, page, genre, publication_date, isbn]]
-        filename = 'books.csv'
+        filename = 'wish_list.csv'
         CsvWriter.csv_write(filename, data)
 
 
