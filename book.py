@@ -18,12 +18,12 @@ def get_books_pages(ll_login):
     while list_of_books_is_empty:
         url = url_base + url_text + str(webpage)
         html = GetHTML.get_html(url)
-        print(html)
+        # print(html)
         soup = BeautifulSoup(html, 'lxml')
 
         checkList = soup.find('div', class_='book-data')
-        print(checkList)
-        if checkList and webpage < 3:
+        # print(checkList)
+        if checkList:  # and webpage < 3:
             books = GetBook.get_books(html, books)
             webpage += 1
             parse_books_info(books)
